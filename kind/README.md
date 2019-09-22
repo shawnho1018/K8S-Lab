@@ -2,5 +2,5 @@
 
 [Easy-Start]
 * Docker Installed
-* Download kind from [release] (https://github.com/kubernetes-sigs/kind/releases) page, untar it and place under exectuable path. 
+* Download kind from [release](https://github.com/kubernetes-sigs/kind/releases) page, untar it and place under exectuable path. 
 * Run k8s-start.sh 

@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.global-static-ip-name: web-static-ip
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  creationTimestamp: null
+  generation: 1
+  labels:
+    app: kubeapps
+    chart: kubeapps-2.1.7
+    heritage: Tiller
+    release: kubeapps
+  name: kubeapps
+  selfLink: /apis/extensions/v1beta1/namespaces/kubeapps/ingresses/kubeapps
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: kubeapps
+          servicePort: 8080
+        path: /kubeapps
+status:
+  loadBalancer: {}

@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: prometheus-static-ip
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+  generation: 1
+  labels:
+    app: prometheus-operator-grafana
+  name: grafana
+  namespace: monitoring
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: prometheus-operator-grafana 
+          servicePort: 80 
+        path: /grafana

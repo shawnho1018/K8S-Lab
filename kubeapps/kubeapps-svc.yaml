@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: kubeapps
+    chart: kubeapps-2.1.7
+    heritage: Tiller
+    release: kubeapps
+  name: kubeapps
+  selfLink: /api/v1/namespaces/kubeapps/services/kubeapps
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080 
+  selector:
+    app: kubeapps
+    release: kubeapps
+  sessionAffinity: None
+  type: NodePort 
+status:
+  loadBalancer: {}

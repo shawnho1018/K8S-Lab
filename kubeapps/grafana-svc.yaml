@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: grafana
+    chart: grafana-3.10.2
+    heritage: Tiller
+    release: prometheus-operator
+  name: prometheus-operator-grafana
+  selfLink: /api/v1/namespaces/monitoring/services/prometheus-operator-grafana
+spec:
+  ports:
+  - name: service
+    port: 80
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: grafana
+    release: prometheus-operator
+  sessionAffinity: None
+  type: LoadBalancer 
+status:
+  loadBalancer: {}

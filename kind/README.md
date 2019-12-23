@@ -7,6 +7,8 @@
 [Easy-Start]
 * Docker Installed
 * Download kind from [release](https://github.com/kubernetes-sigs/kind/releases) page, untar it and place under exectuable path. 
+    * Please directly download kind binary files and untar it in your OS. If you're using MAC, please download the binary with "darwin" in it. 
 * Download kubectl CLI from [release](https://github.com/kubernetes/kubernetes/releases) page. The downloaded version must <= your cluster version. 
-* Choose k8s-start.sh or k8s-start-calico.sh and you would find the k8s cluster being created in no time. 
-
+* Run k8s-start.sh or k8s-start-calico.sh and you would find the k8s cluster being created in no time. 
+    * The entire setup usually takes only 2~3 minutes. If the installation takes too long, please check your network.
+    * Directly running k8s-start.sh will trigger kind to docker pull images from gcr.io. If your location prevents you from using gcr.io, please setup your docker proxy to download.

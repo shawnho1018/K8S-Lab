@@ -1,2 +1,2 @@
 #!/bin/bash
-kind create cluster --config ./cluster.yaml
+kind create cluster --name test1 --config ./cluster.yaml

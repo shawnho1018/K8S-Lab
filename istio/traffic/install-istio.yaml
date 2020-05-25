@@ -1,0 +1,45 @@
+---
+- name: "Demo Istio Traffic Starts"
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: "Install istio using demo profile with global mtls enable"
+      shell: |
+        istioctl manifest apply -y --set profile=demo --set values.global.mtls.enabled=false --set values.global.mtls.auto=true 
+      tags:
+      - istio
+    - name: "Label namespace to have istio-injection on"
+      shell: |
+        kubectl label ns default istio-injection=enabled --overwrite
+      tags:
+      - bookinfo
+      
+    - name: "Install bookinfo application"
+      shell: |
+        kubectl apply -f bookinfo/0-bookinfo.yaml
+        kubectl apply -f bookinfo/0-bookinfo-gateway.yaml
+      tags:
+      - bookinfo
+    
+    - name: "Apply Version V1"
+      shell: |
+        kubectl apply -f bookinfo/destination-rule-all.yaml
+        kubectl apply -f bookinfo/virtual-service-all-v1.yaml
+      tags:
+      - v1
+    - name: "Apply 50-50 V2/V3"
+      shell: |
+        kubectl apply -f bookinfo/destination-rule-all.yaml
+        kubectl apply -f bookinfo/virtual-service-reviews-v2-v3.yaml
+      tags:
+      - v2v3
+    - name: "Implement A/B Testing"
+      shell: |
+        kubectl apply -f bookinfo/ab-test.yaml
+      tags:
+      - abtest
+    - name: "Delay injection"
+      shell: |
+        kubectl apply -f bookinfo/fault-injection.yaml
+      tags:
+      - delay

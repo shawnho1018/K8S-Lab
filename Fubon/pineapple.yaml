@@ -1,0 +1,4 @@
+apiVersion: store.italy.com/v1
+kind: Ingredient 
+metadata:
+  name: pineapple

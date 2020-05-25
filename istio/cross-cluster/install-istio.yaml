@@ -1,0 +1,87 @@
+---
+- name: "Install Istio"
+  hosts: localhost
+  connection: local
+  vars:
+    cluster1: "sm-1"
+    cluster2: "sm-2"
+  tasks:
+    - name: "Prepare certificate for cluster"
+      shell: |
+        kubectl --context {{ item }} create namespace istio-system
+        kubectl --context {{ item }} apply -f bookinfo/kiali-secret.yaml
+        kubectl --context {{ item }} create secret generic cacerts -n istio-system \
+        --from-file=certs/ca-cert.pem \
+        --from-file=certs/ca-key.pem \
+        --from-file=certs/root-cert.pem \
+        --from-file=certs/cert-chain.pem  
+      with_list:
+      - "{{ cluster1 }}"
+      - "{{ cluster2 }}"
+      tags:
+      - istio
+      ignore_errors: yes
+      
+    - name: "Install Istio for dual kubernetes clusters"
+      shell: |
+        istioctl manifest apply -f cross-cluster.yaml --context {{ cluster1 }}
+        istioctl manifest apply -f cross-cluster.yaml --context {{ cluster2 }}
+      tags:
+      - istio
+    - name: "Label namespace to have istio-injection on"
+      shell: |
+        kubectl label ns default istio-injection=enabled --overwrite --context {{ cluster1 }}
+        kubectl label ns default istio-injection=enabled --overwrite --context {{ cluster2 }}
+      tags:
+      - istio
+    - name: "Deploy bookinfo application in separate environment"
+      shell: |
+        kubectl apply --context {{ cluster1 }} -f bookinfo/0-bookinfo-c1.yaml
+        kubectl apply --context {{ cluster2 }} -f bookinfo/0-bookinfo-c2.yaml
+        kubectl apply --context {{ cluster1 }} -f bookinfo/0-bookinfo-gateway.yaml
+      tags:
+      - bookinfo
+    - name: "Get Egress Gateway IP"
+      tags:
+      - cross
+      shell: |
+        kubectl get --context={{ cluster2 }} svc --selector=app=istio-ingressgateway -n istio-system -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}'
+      register: eip
+    - name: "Get Ingress Gateway IP"
+      tags:
+      - cross
+      shell: |
+        kubectl get --context={{ cluster1 }} svc --selector=app=istio-egressgateway -n istio-system -o yaml -o jsonpath='{.items[0].spec.clusterIP}'
+      register: iip
+    - name: "Output results"
+      tags:
+      - cross
+      debug:
+        msg: "EIP: {{ eip.stdout }} , IIP: {{ iip.stdout }}"
+    - name: "Set destination rules"
+      tags:
+      - cross
+      shell: |
+        kubectl apply --context={{ cluster1 }} -f bookinfo/1-destination-rule-c1.yaml
+        kubectl apply --context={{ cluster2 }} -f bookinfo/1-destination-rule-c2.yaml
+        cp bookinfo/2-service-template.yaml  bookinfo/2-service-entry.yaml
+    - name: Produce serviceentry yaml 
+      tags:
+      - cross
+      replace:
+        path: bookinfo/2-service-entry.yaml
+        regexp: "eip"
+        replace: "{{ eip.stdout }}"
+    - name: Produce serviceentry yaml
+      tags:
+      - cross    
+      replace:
+        path: bookinfo/2-service-entry.yaml
+        regexp: "iip"
+        replace: "{{ iip.stdout }}"
+    - name: Apply serviceentry
+      tags:
+      - cross
+      shell: |
+        kubectl apply --context={{ cluster1 }} -f bookinfo/2-service-entry.yaml
+        kubectl apply --context={{ cluster1 }} -f bookinfo/3-virtual-services.yaml

@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-resource
+  annotations:
+    kubernetes.io/ingress.class: "nginx-internal" 
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: nginx
+          servicePort: 1234 
+        path: /nginx
+      - backend:
+          serviceName: web
+          servicePort: 8080
+        path: /web
+      - backend:
+          serviceName: prometheus-main
+          servicePort: 9090
+        path: /prometheus/?(.*)
+      - backend:
+          serviceName: example-app
+          servicePort: 8080
+        path: /example-app

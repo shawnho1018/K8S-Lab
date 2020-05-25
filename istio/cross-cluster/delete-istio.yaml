@@ -1,0 +1,50 @@
+---
+- name: "Uninstall Istio"
+  hosts: localhost
+  connection: local
+  vars:
+    cluster1: "sm-1"
+    cluster2: "sm-2"  
+  tags:
+  - istio
+  tasks:
+    - name: "Delete istio"
+      shell: | 
+        istioctl manifest generate -f cross-cluster.yaml | kubectl delete --context {{ cluster1 }} -f -
+        istioctl manifest generate -f cross-cluster.yaml | kubectl delete --context {{ cluster2 }} -f -
+      register: "output"
+      ignore_errors: yes
+    - debug: var=output.stdout_lines
+
+- name: "Uninstall bookinfo"
+  hosts: localhost
+  vars:
+    cluster1: "sm-1"
+    cluster2: "sm-2"    
+  tags:
+  - bookinfo
+  connection: local
+  tasks:
+    - name: "Delete apps"
+      shell: | 
+        kubectl delete --context {{ cluster1 }} -f bookinfo/0-bookinfo-c1.yaml
+        kubectl delete --context {{ cluster1 }} -f bookinfo/0-bookinfo-gateway.yaml
+        kubectl delete --context {{ cluster2 }} -f bookinfo/0-bookinfo-c2.yaml
+
+- name: "Clean up all rules"
+  hosts: localhost
+  vars:
+    cluster1: "sm-1"
+    cluster2: "sm-2"    
+  tags: 
+  - cross
+  connection: local
+  tasks:
+    - name: "Delete Destination Rules"
+      shell: |
+        kubectl delete --context {{ cluster1 }} -f bookinfo/1-destination-rule-c1.yaml
+        kubectl delete --context {{ cluster2 }} -f bookinfo/1-destination-rule-c2.yaml
+    - name: "Delete Virtual Services"
+      shell: |
+        kubectl delete -f bookinfo/2-service-entry.yaml
+        kubectl delete -f bookinfo/3-virtual-services.yaml

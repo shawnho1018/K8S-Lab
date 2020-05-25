@@ -1,0 +1,39 @@
+---
+- name: "Uninstall Istio"
+  hosts: localhost
+  connection: local
+  tags:
+  - istio
+  tasks:
+    - name: "Delete istio"
+      shell: istioctl manifest generate --set profile=demo --set values.global.mtls.enabled=false --set values.global.mtls.auto=true | kubectl delete -f -
+      register: "output"
+      ignore_errors: yes
+    - debug: var=output.stdout_lines
+
+- name: "Uninstall bookinfo"
+  hosts: localhost
+  tags:
+  - bookinfo
+  - traffic
+  - all
+  connection: local
+  tasks:
+    - name: "Delete apps"
+      shell: | 
+        kubectl delete -f bookinfo/0-bookinfo.yaml
+        kubectl delete -f bookinfo/0-bookinfo-gateway.yaml
+
+- name: "Clean up traffic rules"
+  hosts: localhost
+  tags: 
+  - traffic
+  - all
+  connection: local
+  tasks:
+    - name: "Delete Destination Rules"
+      shell: |
+        kubectl delete -f bookinfo/destination-rule-all.yaml
+    - name: "Delete Virtual Services"
+      shell: |
+        kubectl delete -f bookinfo/virtual-service-all-v1.yaml

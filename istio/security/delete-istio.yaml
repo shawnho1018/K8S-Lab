@@ -1,0 +1,40 @@
+---
+- name: "Uninstall Istio Security Demo"
+  hosts: localhost
+  connection: local
+  tags:
+  - istio
+  tasks:
+    - name: "Delete istio"
+      shell: istioctl manifest generate --set profile=demo --set values.global.mtls.enabled=false --set values.global.mtls.auto=true | kubectl delete -f -
+      register: "output"
+      ignore_errors: yes
+    - debug: var=output.stdout_lines
+
+- name: "Uninstall bookinfo"
+  hosts: localhost
+  tags:
+  - bookinfo
+  connection: local
+  tasks:
+    - name: "Delete apps"
+      shell: | 
+        kubectl delete -f bookinfo/0-bookinfo.yaml
+        kubectl delete -f bookinfo/0-bookinfo-gateway.yaml
+      ignore_errors: yes
+
+- name: "Clean up security rules"
+  hosts: localhost
+  tags: 
+  - security
+  - bookinfo
+  connection: local
+  tasks:
+    - name: "Delete Authroization"
+      shell: |
+        kubectl delete -f bookinfo/authorization.yaml
+    - name: "Delete peer authentications"
+      shell: |
+        kubectl delete -f bookinfo/peer-authentication-svc.yaml
+        kubectl delete -f bookinfo/peer-authentication-global.yaml
+      ignore_errors: yes

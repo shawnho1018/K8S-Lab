@@ -1,0 +1,22 @@
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: "overwrite-example"
+  namespace: bar
+spec:
+  selector:
+    matchLabels:
+      app: httpbin
+  mtls:
+    mode: DISABLE
+---
+apiVersion: "networking.istio.io/v1alpha3"
+kind: "DestinationRule"
+metadata:
+  name: "overwrite-example"
+  namespace: bar
+spec:
+  host: httpbin.bar.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE

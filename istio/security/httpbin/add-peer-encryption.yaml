@@ -1,0 +1,8 @@
+---
+- name: "Install Istio"
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: "Enforce Authentication Globally"
+    shell: |
+      

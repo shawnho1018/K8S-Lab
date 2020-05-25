@@ -1,0 +1,25 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: main
+spec:
+  replicas: 1 
+  version: v0.7.1
+  externalUrl: http://35.194.156.4/alertmanager
+  resources:
+    requests:
+      memory: 400Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager-main
+spec:
+  type: ClusterIP
+  ports:
+  - name: web
+    port: 9093
+    protocol: TCP
+    targetPort: web
+  selector:
+    alertmanager: main

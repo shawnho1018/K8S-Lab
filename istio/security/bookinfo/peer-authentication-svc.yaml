@@ -1,0 +1,29 @@
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: "details"
+  namespace: "default"
+spec:
+  selector:
+    matchLabels:
+      app: details
+  mtls:
+    mode: STRICT
+  portLevelMtls:
+    9080:
+      mode: DISABLE
+---
+apiVersion: "networking.istio.io/v1alpha3"
+kind: "DestinationRule"
+metadata:
+  name: "details"
+spec:
+  host: details.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+    portLevelSettings:
+    - port:
+        number: 9080
+      tls:
+        mode: DISABLE

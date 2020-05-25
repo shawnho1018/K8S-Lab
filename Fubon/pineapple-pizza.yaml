@@ -1,0 +1,11 @@
+apiVersion: store.italy.com/v1
+kind: Crust 
+metadata:
+  name: pizza
+  ownerReferences:
+  - apiVersion: v1
+    controller: true
+    blockOwnerDeletion: true
+    kind: ingredient
+    name: pineapple
+    uid: 5e0a952f-6ddd-11ea-833e-42010a8c00a8

@@ -1,6 +1,7 @@
 ### Security folder implements the security features of Istio.
 #### Quick Start Guide
 ```
+# before begin, please change your working directory to security folder and also retrieve your kubeconfig.
 ansible-playbook install-istio.yaml --tag istio
 ansible-playbook install-istio.yaml --tag bookinfo
 

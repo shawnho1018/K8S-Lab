@@ -1,4 +1,4 @@
-#Istio Playground
+#### Istio Playground
 This project is to create a lab environment to assist users to learn istio. Three projects were created to show off istio's traffic redirection, secure communication, and cross-cluster communication capabilities. 
 
 This tutorial was built and tested against istio 1.5.4. The kubernetes clusters have been tested against vSphere 7's guest cluster and GKE. 

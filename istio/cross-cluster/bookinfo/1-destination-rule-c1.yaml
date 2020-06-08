@@ -3,8 +3,8 @@ kind: DestinationRule
 metadata:
   name: reviews-global
 spec:
-#  host: reviews.default.global
-  host: '*.global'
+  host: reviews.default.global
+  #  host: '*.global'
   trafficPolicy:
     loadBalancer:
       simple: ROUND_ROBIN

@@ -23,7 +23,8 @@ spec:
   gateways:
   - bookinfo-gateway
   http:
-  - match:
+  - name: "bookinfo"
+    match:
     - uri:
         exact: /productpage
     - uri:

@@ -6,11 +6,11 @@ spec:
   addresses:
   - 240.0.0.18
   endpoints:
-  - address: 10.15.246.201
+  - address: 10.35.250.87
     network: external
     ports:
       http1: 15443 # Do not change this port value
-  - address: 35.194.247.105
+  - address: 35.221.136.211
     ports:
       http1: 15443
   hosts:
